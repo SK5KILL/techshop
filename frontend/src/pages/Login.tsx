@@ -14,7 +14,7 @@ export default function Login() {
     const endpoint = isLogin ? '/api/login' : '/api/register';
     
     try {
-      const res = await fetch(`http://localhost:3001${endpoint}`, {
+      const res = await fetch(`https://techshop-backend-dkgb.onrender.com${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
