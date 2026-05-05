@@ -6,7 +6,7 @@ export default function Profile() {
   const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/users/${user.id}/orders`)
+    fetch(`https://techshop-backend-dkgb.onrender.com/api/users/${user.id}/orders`)
       .then(r => r.json())
       .then(setOrders);
   }, [user.id]);
