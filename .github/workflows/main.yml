@@ -1,0 +1,63 @@
+name: Deploy Fullstack App
+
+on:
+  push:
+    branches: [ "main", "master" ]  # ваша основная ветка
+
+jobs:
+  # JOB 1: Сборка и деплой ФРОНТЕНДА на GitHub Pages
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      # Переходим в папку frontend и устанавливаем зависимости
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+      
+      # Собираем фронтенд
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run dev
+      
+      # Деплоим собранный фронтенд на GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/build  # или ./frontend/dist, ./frontend/out и т.д.
+          publish_branch: gh-pages
+
+  # JOB 2: Установка зависимостей БЕКЕНДА (для демонстрации)
+  # ВНИМАНИЕ: GitHub Pages НЕ запускает серверный код!
+  setup-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      # Переходим в папку backend и устанавливаем зависимости
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+      
+      # Просто проверяем, что зависимости установились
+      - name: Verify backend installation
+        run: |
+          cd backend
+          npm list --depth=0
+          npx ts-node src/index.ts
+      
+      # ⚠️ ВАЖНО: здесь НЕЛЬЗЯ запустить сервер!
+      # run: npm start  # Это НЕ БУДЕТ РАБОТАТЬ на GitHub Pages
