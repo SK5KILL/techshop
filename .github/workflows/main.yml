@@ -13,7 +13,7 @@ jobs:
       
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
       
       # Переходим в папку frontend и устанавливаем зависимости
       - name: Install frontend dependencies
@@ -44,7 +44,7 @@ jobs:
       
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
       
       # Переходим в папку backend и устанавливаем зависимости
       - name: Install backend dependencies
@@ -58,6 +58,3 @@ jobs:
           cd backend
           npm list --depth=0
           npx ts-node src/index.ts
-      
-      # ⚠️ ВАЖНО: здесь НЕЛЬЗЯ запустить сервер!
-      # run: npm start  # Это НЕ БУДЕТ РАБОТАТЬ на GitHub Pages
