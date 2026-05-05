@@ -18,7 +18,7 @@ export default function Cart() {
 
     try {
       // 1. Создаем заказ
-      await fetch('http://localhost:3001/api/orders', {
+      await fetch('https://techshop-backend-dkgb.onrender.com/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, items, total: total() })
