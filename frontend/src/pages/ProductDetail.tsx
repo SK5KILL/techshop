@@ -25,7 +25,7 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!id) return;
     
-    fetch(`http://localhost:3001/api/products/${id}`)
+    fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) {
