@@ -11,7 +11,7 @@ export default function Catalog() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/products')
+    fetch('https://techshop-backend-dkgb.onrender.com/api/products')
       .then(r => r.json())
       .then(setProducts);
   }, []);
