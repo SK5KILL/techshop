@@ -30,7 +30,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
     
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3001/api/orders/checkout', {
+      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/orders/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ userId: user.id, items, total: total(), deliveryInfo: formData })
