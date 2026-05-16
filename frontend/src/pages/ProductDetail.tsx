@@ -33,7 +33,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:3001/api/products/${id}`)
+    fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) navigate('/catalog');
@@ -44,7 +44,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:3001/api/products/${id}/reviews`)
+    fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}/reviews`)
       .then(r => r.json())
       .then(setReviews);
   }, [id]);
@@ -63,7 +63,7 @@ export default function ProductDetail() {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3001/api/reviews', {
+      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ productId: parseInt(id), text: reviewText.trim() })
@@ -71,7 +71,7 @@ export default function ProductDetail() {
       const data = await res.json();
       if (data.success) {
         setReviewText('');
-        fetch(`http://localhost:3001/api/products/${id}/reviews`)
+        fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}/reviews`)
           .then(r => r.json())
           .then(setReviews);
       }
