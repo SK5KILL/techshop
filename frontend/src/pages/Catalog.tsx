@@ -23,8 +23,8 @@ export default function Catalog() {
   // Загрузка товаров с учётом выбранной категории
   useEffect(() => {
     const url = selectedCategory === 'all'
-      ? 'http://localhost:3001/api/products'
-      : `http://localhost:3001/api/products?category=${encodeURIComponent(selectedCategory)}`;
+      ? 'https://techshop-backend-dkgb.onrender.com/api/products'
+      : `https://techshop-backend-dkgb.onrender.com/api/products?category=${encodeURIComponent(selectedCategory)}`;
 
     fetch(url)
       .then(r => r.json())
