@@ -33,7 +33,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token || quantity < 1) return;
     
     try {
-      await fetch(`http://localhost:3001/api/cart/${productId}`, {
+      await fetch(`https://techshop-backend-dkgb.onrender.com/api/cart/${productId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     
     try {
       set({ isLoading: true });
-      const res = await fetch('http://localhost:3001/api/cart', {
+      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -72,7 +72,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch('http://localhost:3001/api/cart', {
+      await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch(`http://localhost:3001/api/cart/${productId}`, {
+      await fetch(`https://techshop-backend-dkgb.onrender.com/api/cart/${productId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -104,7 +104,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch('http://localhost:3001/api/cart', {
+      await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
