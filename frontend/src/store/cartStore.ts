@@ -7,6 +7,7 @@ interface CartItem {
   stock: number;
   image: string;
   quantity: number;
+  category: string;
 }
 
 interface CartState {
@@ -18,6 +19,7 @@ interface CartState {
   addToCart: (productId: number) => Promise<void>;
   removeFromCart: (productId: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  updateQuantity: (productId: number, quantity: number) => Promise<void>;
   
   // Вычисляемые свойства
   total: () => number;
@@ -26,14 +28,32 @@ interface CartState {
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   isLoading: false,
-
+  updateQuantity: async (productId: number, quantity: number) => {
+    const token = localStorage.getItem('token');
+    if (!token || quantity < 1) return;
+    
+    try {
+      await fetch(`http://localhost:3001/api/cart/${productId}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ quantity })
+      });
+      // После обновления на сервере перезагружаем корзину
+      get().fetchCart();
+    } catch (e) { 
+      console.error(e); 
+    }
+  },
   fetchCart: async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
     
     try {
       set({ isLoading: true });
-      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
+      const res = await fetch('http://localhost:3001/api/cart', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -52,7 +72,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
+      await fetch('http://localhost:3001/api/cart', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -70,7 +90,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch(`https://techshop-backend-dkgb.onrender.com/api/cart/${productId}`, {
+      await fetch(`http://localhost:3001/api/cart/${productId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -84,7 +104,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!token) return;
 
     try {
-      await fetch('https://techshop-backend-dkgb.onrender.com/api/cart', {
+      await fetch('http://localhost:3001/api/cart', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

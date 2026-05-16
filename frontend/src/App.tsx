@@ -3,11 +3,12 @@ import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
-import ProductDetail from './pages/ProductDetail'; // 👈 Импортируем
+import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+import Contacts from './pages/Contacts'; // 👈 Импортируем
 import { useAuthStore } from './store/authStore';
 import { useCartStore } from './store/cartStore';
 
@@ -31,10 +32,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/catalog" element={<Catalog />} />
-          <Route path="/product/:id" element={<ProductDetail />} /> {/* 👈 Новый маршрут */}
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={user ? <Cart /> : <Navigate to="/login" />} />
           <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/contacts" element={<Contacts />} /> {/* 👈 Новый маршрут */}
           <Route path="/admin" element={user?.role === 'admin' ? <Admin /> : <Navigate to="/" />} />
         </Routes>
       </div>

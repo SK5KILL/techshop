@@ -20,41 +20,35 @@ export default function Admin() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   
+  // Форма добавления
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    price: '',
-    stock: '',
-    description: '',
-    image: '' 
+    name: '', category: '', price: '', stock: '', description: '', image: '' 
   });
-  
   const [previewImage, setPreviewImage] = useState('');
   const [message, setMessage] = useState('');
 
-  // Защита маршрута
   if (!user || user.role !== 'admin') {
     navigate('/');
     return null;
   }
 
-  // Загрузка товаров
+  // Загрузка
   useEffect(() => {
-    fetch('https://techshop-backend-dkgb.onrender.com/api/products')
+    fetch('http://localhost:3001/api/products')
       .then(r => r.json())
       .then(setProducts);
   }, []);
 
-  // === ФУНКЦИИ ДЛЯ ДОБАВЛЕНИЯ ===
+  // === ФУНКЦИИ ДОБАВЛЕНИЯ ===
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const base64String = reader.result as string;
-        setFormData(prev => ({ ...prev, image: base64String }));
-        setPreviewImage(base64String);
+        const res = reader.result as string;
+        setFormData(prev => ({ ...prev, image: res }));
+        setPreviewImage(res);
       };
     }
   };
@@ -63,52 +57,42 @@ export default function Admin() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/products', {
+      const res = await fetch('http://localhost:3001/api/products', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           ...formData,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock) || 0
         })
       });
-      
       const data = await res.json();
-      if (data.error) {
-        setMessage(data.error);
-      } else {
+      if (data.error) setMessage(data.error);
+      else {
         setMessage('✅ Товар добавлен!');
         setFormData({ name: '', category: '', price: '', stock: '', description: '', image: '' });
         setPreviewImage('');
-        fetch('https://techshop-backend-dkgb.onrender.com/api/products').then(r => r.json()).then(setProducts);
+        fetch('http://localhost:3001/api/products').then(r => r.json()).then(setProducts);
       }
-    } catch {
-      setMessage('❌ Ошибка соединения');
-    }
+    } catch { setMessage('❌ Ошибка соединения'); }
   };
 
-  // === ФУНКЦИИ ДЛЯ УДАЛЕНИЯ ===
+  // === ФУНКЦИИ УДАЛЕНИЯ ===
   const handleDelete = async (id: number) => {
     if (!confirm('Удалить товар?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}`, {
+      await fetch(`http://localhost:3001/api/products/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setProducts(products.filter(p => p.id !== id));
       setMessage('✅ Товар удален');
-    } catch { 
-      setMessage('❌ Ошибка'); 
-    }
+    } catch { setMessage('❌ Ошибка'); }
   };
 
-  // === ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ ===
+  // === ФУНКЦИИ РЕДАКТИРОВАНИЯ ===
   const startEdit = (product: Product) => {
-    console.log('🔧 Start edit:', product);
     setEditingProduct({ ...product });
     setIsEditing(true);
   };
@@ -116,34 +100,26 @@ export default function Admin() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
-    
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${editingProduct.id}`, {
+      const res = await fetch(`http://localhost:3001/api/products/${editingProduct.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           ...editingProduct,
           price: parseFloat(editingProduct.price as any),
           stock: parseInt(editingProduct.stock as any) || 0
         })
       });
-      
       const data = await res.json();
-      if (data.error) {
-        setMessage(data.error);
-      } else {
+      if (data.error) setMessage(data.error);
+      else {
         setMessage('✅ Товар обновлён!');
         setIsEditing(false);
         setEditingProduct(null);
-        fetch('https://techshop-backend-dkgb.onrender.com/api/products').then(r => r.json()).then(setProducts);
+        fetch('http://localhost:3001/api/products').then(r => r.json()).then(setProducts);
       }
-    } catch {
-      setMessage('❌ Ошибка соединения');
-    }
+    } catch { setMessage('❌ Ошибка соединения'); }
   };
 
   const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,158 +133,134 @@ export default function Admin() {
     }
   };
 
-  // === РЕНДЕР ===
   return (
-    <div>
-      <h1>🛠 Админ-панель</h1>
-      
-      {/* Форма добавления товара */}
-      <div style={{ background: '#f8f9fa', padding: 20, borderRadius: 8, marginBottom: 30 }}>
-        <h2>➕ Добавить товар</h2>
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <input placeholder="Название *" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required style={{ padding: 10 }} />
-          <input placeholder="Категория" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ padding: 10 }} />
-          <input type="number" placeholder="Цена *" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} required style={{ padding: 10 }} />
-          <input type="number" placeholder="Количество" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} style={{ padding: 10 }} />
+    <div className="container" style={{ padding: '40px 20px' }}>
+      <h1 className="admin-title">🛠 Админ-панель</h1>
+
+      {message && (
+        <div style={{ 
+          padding: 15, borderRadius: 8, marginBottom: 20, 
+          background: message.includes('❌') ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)',
+          color: message.includes('❌') ? '#f87171' : '#34d399',
+          border: `1px solid ${message.includes('❌') ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}`
+        }}>
+          {message}
+        </div>
+      )}
+
+      {/* Секция добавления */}
+      <div className="admin-section">
+        <div className="glass-card add-product-form">
+          <div className="form-group">
+            <label>Название *</label>
+            <input 
+              placeholder="Например: RTX 4090" 
+              value={formData.name} 
+              onChange={e => setFormData({...formData, name: e.target.value})} 
+              required 
+            />
+          </div>
+          <div className="form-group">
+            <label>Категория</label>
+            <input 
+              placeholder="Видеокарты" 
+              value={formData.category} 
+              onChange={e => setFormData({...formData, category: e.target.value})} 
+            />
+          </div>
+          <div className="form-group">
+            <label>Цена *</label>
+            <input 
+              type="number" 
+              placeholder="45000" 
+              value={formData.price} 
+              onChange={e => setFormData({...formData, price: e.target.value})} 
+              required 
+            />
+          </div>
+          <div className="form-group">
+            <label>Количество</label>
+            <input 
+              type="number" 
+              placeholder="10" 
+              value={formData.stock} 
+              onChange={e => setFormData({...formData, stock: e.target.value})} 
+            />
+          </div>
           
-          <div style={{ gridColumn: '1 / -1', padding: 10, border: '1px dashed #ccc', borderRadius: 4 }}>
-            <label>Изображение товара:</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'block', marginTop: 5 }} />
-            {previewImage && <img src={previewImage} alt="Preview" style={{ maxHeight: 100, marginTop: 10, borderRadius: 4 }} />}
-          </div>
-
-          <textarea placeholder="Описание" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={3} style={{ padding: 10, gridColumn: '1 / -1' }} />
-          <button type="submit" style={{ gridColumn: '1 / -1', padding: 12, background: '#27ae60', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>
-            Добавить товар в БД
-          </button>
-        </form>
-      </div>
-
-      {message && <p style={{ color: message.includes('❌') ? 'red' : 'green' }}>{message}</p>}
-      
-      {/* Список товаров */}
-      <h2>📦 Управление товарами</h2>
-      <div style={{ marginTop: 20 }}>
-        {products.map(product => (
-          <div key={product.id} style={{ display: 'flex', padding: 15, borderBottom: '1px solid #ddd', alignItems: 'center', gap: 15 }}>
-            {product.image ? (
-              <img src={product.image} alt={product.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }} />
-            ) : (
-              <div style={{ width: 60, height: 60, background: '#eee', borderRadius: 4 }} />
-            )}
-            <div style={{ flex: 1 }}>
-              <h3 style={{ margin: 0 }}>{product.name}</h3>
-              <p style={{ margin: 0, color: '#666' }}>{product.category} • {product.price} ₽</p>
-            </div>
-            
-            {/* Кнопки управления */}
-            <button 
-              onClick={() => startEdit(product)}
-              style={{ background: '#3498db', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}
-            >
-              ✏️ Редактировать
-            </button>
-            <button 
-              onClick={() => handleDelete(product.id)} 
-              style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}
-            >
-              🗑 Удалить
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* ✅ МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ - ВНУТРИ RETURN */}
-      {isEditing && editingProduct && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }} onClick={() => setIsEditing(false)}>
-          <div style={{
-            background: 'white',
-            padding: 25,
-            borderRadius: 12,
-            maxWidth: 600,
-            width: '90%',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }} onClick={e => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0 }}>✏️ Редактировать товар</h2>
-            
-            <form onSubmit={handleUpdate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <input
-                placeholder="Название *"
-                value={editingProduct.name}
-                onChange={e => setEditingProduct({...editingProduct, name: e.target.value})}
-                required
-                style={{ padding: 10 }}
-              />
-              <input
-                placeholder="Категория"
-                value={editingProduct.category}
-                onChange={e => setEditingProduct({...editingProduct, category: e.target.value})}
-                style={{ padding: 10 }}
-              />
-              <input
-                type="number"
-                placeholder="Цена *"
-                value={editingProduct.price}
-                onChange={e => setEditingProduct({...editingProduct, price: e.target.value as any})}
-                required
-                style={{ padding: 10 }}
-              />
-              <input
-                type="number"
-                placeholder="Количество"
-                value={editingProduct.stock}
-                onChange={e => setEditingProduct({...editingProduct, stock: e.target.value as any})}
-                style={{ padding: 10 }}
-              />
-              
-              <div style={{ gridColumn: '1 / -1', padding: 10, border: '1px dashed #ccc', borderRadius: 4 }}>
-                <label>Изображение:</label>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleEditFileChange} 
-                  style={{ display: 'block', marginTop: 5 }} 
-                />
-                {editingProduct.image && (
-                  <img 
-                    src={editingProduct.image} 
-                    alt="Preview" 
-                    style={{ maxHeight: 100, marginTop: 10, borderRadius: 4 }} 
-                  />
-                )}
+          <div className="form-group form-group-full">
+            <div className="file-input-wrapper">
+              <input type="file" accept="image/*" onChange={handleFileChange} />
+              <div style={{ color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                📷 Нажмите для загрузки изображения
               </div>
+              {previewImage && <img src={previewImage} alt="Preview" className="preview-image" />}
+            </div>
+          </div>
+
+          <div className="form-group form-group-full">
+            <label>Описание</label>
+            <textarea 
+              placeholder="Полные характеристики..." 
+              value={formData.description} 
+              onChange={e => setFormData({...formData, description: e.target.value})} 
+              rows={3} 
+            />
+          </div>
+
+          <div className="form-group-full">
+            <button onClick={handleSubmit} className="btn btn-primary" style={{ width: '100%', padding: 16, fontSize: 16 }}>
+              ✨ Добавить товар в каталог
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Секция списка товаров */}
+      <div className="admin-section">
+        <h2 style={{ color: 'white', marginBottom: 20, fontSize: '1.5rem' }}>📦 Управление товарами</h2>
+        <div className="product-list">
+          {products.map(product => (
+            <div key={product.id} className="product-row">
+              <img src={product.image || 'https://via.placeholder.com/60'} alt={product.name} className="product-thumb" />
               
-              <textarea
-                placeholder="Описание"
-                value={editingProduct.description}
-                onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
-                rows={3}
-                style={{ padding: 10, gridColumn: '1 / -1' }}
-              />
+              <div className="product-info-row">
+                <div className="product-name-row">{product.name}</div>
+                <div className="product-meta-row">{product.category} • {product.price} ₽</div>
+              </div>
+
+              <button onClick={() => startEdit(product)} className="action-btn btn-edit">
+                ✏️ Ред.
+              </button>
+              <button onClick={() => handleDelete(product.id)} className="action-btn btn-delete">
+                🗑 Удалить
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Модальное окно редактирования (Glassmorphism) */}
+      {isEditing && editingProduct && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)' }} onClick={() => setIsEditing(false)}>
+          <div className="glass-card" style={{ padding: 30, width: '90%', maxWidth: 600 }} onClick={e => e.stopPropagation()}>
+            <h2 style={{ marginTop: 0, color: 'white' }}>✏️ Редактирование: {editingProduct.name}</h2>
+            <form onSubmit={handleUpdate} className="add-product-form" style={{ padding: 0 }}>
+              <div className="form-group"><label>Название</label><input value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} required /></div>
+              <div className="form-group"><label>Категория</label><input value={editingProduct.category} onChange={e => setEditingProduct({...editingProduct, category: e.target.value})} /></div>
+              <div className="form-group"><label>Цена</label><input type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: e.target.value as any})} required /></div>
+              <div className="form-group"><label>Сток</label><input type="number" value={editingProduct.stock} onChange={e => setEditingProduct({...editingProduct, stock: e.target.value as any})} /></div>
               
-              <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, marginTop: 10 }}>
-                <button 
-                  type="submit" 
-                  style={{ flex: 1, padding: 12, background: '#27ae60', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
-                >
-                  💾 Сохранить
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => { setIsEditing(false); setEditingProduct(null); }}
-                  style={{ flex: 1, padding: 12, background: '#95a5a6', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
-                >
-                  Отмена
-                </button>
+              <div className="form-group form-group-full">
+                <label>Изображение</label>
+                <input type="file" accept="image/*" onChange={handleEditFileChange} />
+                {editingProduct.image && <img src={editingProduct.image} alt="Prev" style={{ height: 80, marginTop: 10 }} />}
+              </div>
+              <div className="form-group form-group-full"><label>Описание</label><textarea value={editingProduct.description} onChange={e => setEditingProduct({...editingProduct, description: e.target.value})} rows={3} /></div>
+              
+              <div className="form-group-full" style={{ display: 'flex', gap: 10 }}>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>💾 Сохранить</button>
+                <button type="button" onClick={() => setIsEditing(false)} className="btn btn-outline" style={{ flex: 1 }}>Отмена</button>
               </div>
             </form>
           </div>

@@ -4,7 +4,7 @@ import Database from 'better-sqlite3';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-
+import nodemailer from 'nodemailer';
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); 
@@ -46,13 +46,24 @@ db.exec(`
   );
   
   CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  items TEXT,
+  total REAL,
+  status TEXT DEFAULT 'new',
+  delivery_info TEXT, -- 👈 Новое поле
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+  
+    CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    items TEXT,
-    total REAL,
-    status TEXT DEFAULT 'new',
+    text TEXT NOT NULL,
+    client_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY(client_id) REFERENCES users(id),
+    FOREIGN KEY(product_id) REFERENCES products(id)
   );
 `);
 
@@ -140,9 +151,27 @@ app.post('/api/login', (req, res) => {
 });
 
 // КАТАЛОГ товаров
-app.get('/api/products', (_req, res) => {
-  const products = db.prepare('SELECT * FROM products').all() as any[];
-  res.json(products);
+app.get('/api/products', (req, res) => {
+let category: string | undefined = req.query.category as string | undefined;
+if (Array.isArray(category)) {
+  category = category[0];
+}
+
+let query = 'SELECT * FROM products';
+const params: any[] = [];
+
+// Если передана категория и она не "all", добавляем WHERE
+if (category && category.toLowerCase() !== 'all') {
+  query += ' WHERE category = ?';
+  params.push(category);
+}
+
+  try {
+    const products = db.prepare(query).all(...params) as any[];
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка получения товаров' });
+  }
 });
 
 // Товар по ID
@@ -198,12 +227,15 @@ app.get('/api/users/:id/orders', (req, res) => {
 // === КОРЗИНА ===
 app.get('/api/cart', isAuthenticated, (req: any, res) => {
   const userId = req.userId;
+  
+  // 👇 ДОБАВЬ p.category В ЭТОТ ЗАПРОС
   const items = db.prepare(`
-    SELECT p.id as product_id, p.name, p.price, p.stock, p.image, c.quantity 
+    SELECT p.id as product_id, p.name, p.price, p.stock, p.image, p.category, c.quantity 
     FROM cart_items c
     JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?
   `).all(userId) as any[];
+  
   res.json(items);
 });
 
@@ -220,6 +252,59 @@ app.post('/api/cart', isAuthenticated, (req: any, res) => {
     db.prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)').run(userId, productId, quantity);
   }
   res.json({ success: true, message: 'Добавлено в корзину' });
+});
+
+// Получить отзывы товара
+app.get('/api/products/:id/reviews', (req, res) => {
+  const reviews = db.prepare(`
+    SELECT r.id, r.text, r.client_id, u.login as client_name, r.created_at
+    FROM reviews r
+    JOIN users u ON r.client_id = u.id
+    WHERE r.product_id = ?
+    ORDER BY r.created_at DESC
+  `).all(req.params.id) as any[];
+  res.json(reviews);
+});
+
+// ОБНОВЛЕНИЕ количества товара в корзине
+app.put('/api/cart/:productId', isAuthenticated, (req: any, res) => {
+  const userId = req.userId;
+  const productId = req.params.productId;
+  const { quantity } = req.body;
+
+  if (!quantity || quantity < 1) {
+    return res.status(400).json({ error: 'Количество должно быть не менее 1' });
+  }
+
+  try {
+    const result = db.prepare(
+      'UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?'
+    ).run(quantity, userId, productId);
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Товар не найден в корзине' });
+    }
+    
+    res.json({ success: true, message: 'Количество обновлено' });
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка обновления количества' });
+  }
+});
+
+// Добавить отзыв (только авторизованным)
+app.post('/api/reviews', isAuthenticated, (req: any, res) => {
+  const userId = req.userId;
+  const { productId, text } = req.body;
+  
+  if (!text || !productId) return res.status(400).json({ error: 'Текст и ID товара обязательны' });
+  
+  try {
+    db.prepare('INSERT INTO reviews (text, client_id, product_id) VALUES (?, ?, ?)')
+      .run(text.trim(), userId, productId);
+    res.json({ success: true, message: 'Отзыв опубликован' });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Ошибка сохранения отзыва' });
+  }
 });
 
 app.delete('/api/cart/:productId', isAuthenticated, (req: any, res) => {
@@ -257,6 +342,61 @@ app.put('/api/products/:id', isAdmin, (req, res) => {
     res.json({ success: true, message: 'Товар обновлён' });
   } catch (err: any) {
     res.status(500).json({ error: 'Ошибка обновления товара' });
+  }
+
+});
+
+const transporter = nodemailer.createTransport({
+  service: 'yandex',
+  auth: {
+    user: process.env.EMAIL_USER || 'kostia.suhanoff@yandex.ru',
+    pass: process.env.EMAIL_PASS || 'kdjhlakgiacxynky' // Пароль приложения, не основной!
+  }
+});
+
+app.post('/api/orders/checkout', isAuthenticated, async (req: any, res) => {
+  const userId = req.userId;
+  const { items, total, deliveryInfo } = req.body;
+
+  if (!items || items.length === 0) return res.status(400).json({ error: 'Корзина пуста' });
+
+  try {
+    // 1. Сохраняем заказ в БД
+    const orderResult = db.prepare(
+      'INSERT INTO orders (user_id, items, total, status, delivery_info) VALUES (?, ?, ?, ?, ?)'
+    ).run(userId, JSON.stringify(items), total, 'new', JSON.stringify(deliveryInfo));
+
+    // 2. Очищаем корзину
+    db.prepare('DELETE FROM cart_items WHERE user_id = ?').run(userId);
+
+    // 3. Формируем письмо
+    const itemsList = items.map((i: any) => 
+      `• ${i.name} × ${i.quantity} = ${(i.price * i.quantity).toLocaleString()} ₽`
+    ).join('\n');
+
+    const emailHtml = `
+      <h2> Новый заказ #${orderResult.lastInsertRowid}</h2>
+      <p><b>Клиент:</b> ${deliveryInfo.name}</p>
+      <p><b>Телефон:</b> ${deliveryInfo.phone}</p>
+      <p><b>Способ:</b> ${deliveryInfo.deliveryMethod === 'delivery' ? ' Доставка' : '🏪 Самовывоз'}</p>
+      ${deliveryInfo.deliveryMethod === 'delivery' ? `<p><b>Адрес:</b> ${deliveryInfo.address}</p>` : ''}
+      <h3>Состав заказа:</h3>
+      <pre style="background:#f5f5f5; padding:10px; border-radius:6px;">${itemsList}</pre>
+      <p><b>Итого:</b> ${total.toLocaleString()} ₽</p>
+    `;
+
+    // 4. Отправляем на почту админа
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER || 'noreply@techshop.ru',
+      to: 'kostia.suhanoff@yandex.ru',
+      subject: `Заказ #${orderResult.lastInsertRowid} | TechShop`,
+      html: emailHtml
+    });
+
+    res.json({ success: true, orderId: orderResult.lastInsertRowid });
+  } catch (err) {
+    console.error('❌ Checkout error:', err);
+    res.status(500).json({ error: 'Ошибка оформления заказа' });
   }
 });
 

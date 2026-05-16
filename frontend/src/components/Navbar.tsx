@@ -13,42 +13,59 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ background: '#2c3e50', padding: '15px 0', marginBottom: 20 }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: 24, fontWeight: 'bold' }}>🖥 TechShop</Link>
+    <nav style={{
+      position: 'sticky', 
+      top: 0, 
+      zIndex: 50, 
+      marginBottom: 20,
+      background: 'rgba(10, 14, 23, 0.7)', // Полупрозрачный фон
+      backdropFilter: 'blur(20px)',
+      borderBottom: '1px solid rgba(255,255,255,0.1)'
+    }}>
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '70px' }}>
+        <Link to="/" className="text-gradient" style={{ textDecoration: 'none', fontSize: 24, fontWeight: 800, fontFamily: 'Montserrat' }}>
+          TECH.SHOP
+        </Link>
         
-        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-          <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Главная</Link>
-          <Link to="/catalog" style={{ color: 'white', textDecoration: 'none' }}>Каталог</Link>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <Link to="/" className="nav-link">Главная</Link>
+          <Link to="/catalog" className="nav-link">Каталог</Link>
+          <Link to="/contacts" className="nav-link">Контакты</Link>
           
           {isAuthenticated ? (
             <>
               {user?.role === 'admin' && (
-                <Link to="/admin" style={{ color: '#f39c12', textDecoration: 'none', fontWeight: 'bold' }}>⚙️ Админка</Link>
+                <Link to="/admin" className="nav-link" style={{ color: '#ec4899' }}>Admin</Link>
               )}
-              <Link to="/cart" style={{ color: 'white', textDecoration: 'none', position: 'relative' }}>
-                🛒 Корзина
+              <Link to="/cart" className="nav-link" style={{ position: 'relative' }}>
+                Корзина
                 {cartItems.length > 0 && (
                   <span style={{
                     position: 'absolute',
-                    top: '-8px',
-                    right: '-12px',
-                    background: '#e74c3c',
+                    top: '-8px', right: '-10px',
+                    background: 'var(--accent)',
                     color: 'white',
                     borderRadius: '50%',
-                    padding: '2px 6px',
-                    fontSize: 12,
+                    width: 18, height: 18,
+                    fontSize: 11,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontWeight: 'bold'
                   }}>
                     {cartItems.length}
                   </span>
                 )}
               </Link>
-              <Link to="/profile" style={{ color: 'white', textDecoration: 'none' }}>👤 {user?.fio || user?.login}</Link>
-              <button onClick={handleLogout} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '8px 16px', cursor: 'pointer', borderRadius: 4 }}>Выйти</button>
+              <Link to="/profile" className="nav-link">👤 {user?.fio || user?.login}</Link>
+              <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '6px 14px', fontSize: 12 }}>
+                Выйти
+              </button>
             </>
           ) : (
-            <Link to="/login" style={{ color: 'white', textDecoration: 'none' }}>🔐 Войти</Link>
+            <Link to="/login">
+              <button className="btn btn-primary" style={{ padding: '8px 20px' }}>
+                Войти
+              </button>
+            </Link>
           )}
         </div>
       </div>
