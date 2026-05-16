@@ -34,7 +34,7 @@ export default function Admin() {
 
   // Загрузка
   useEffect(() => {
-    fetch('http://localhost:3001/api/products')
+    fetch('https://techshop-backend-dkgb.onrender.com/api/products')
       .then(r => r.json())
       .then(setProducts);
   }, []);
@@ -57,7 +57,7 @@ export default function Admin() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3001/api/products', {
+      const res = await fetch('https://techshop-backend-dkgb.onrender.com/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -72,7 +72,7 @@ export default function Admin() {
         setMessage('✅ Товар добавлен!');
         setFormData({ name: '', category: '', price: '', stock: '', description: '', image: '' });
         setPreviewImage('');
-        fetch('http://localhost:3001/api/products').then(r => r.json()).then(setProducts);
+        fetch('https://techshop-backend-dkgb.onrender.com/api/products').then(r => r.json()).then(setProducts);
       }
     } catch { setMessage('❌ Ошибка соединения'); }
   };
