@@ -5,9 +5,8 @@ import { useAuthStore } from '../store/authStore';
 import CheckoutModal from '../components/CheckoutModal';
 
 export default function Cart() {
-  const { items, removeFromCart, clearCart, total, fetchCart, updateQuantity } = useCartStore();
+  const { items, removeFromCart, total, fetchCart, updateQuantity } = useCartStore();
   const { user } = useAuthStore();
-  const navigate = useNavigate();
   
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
