@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import { useThemeStore } from '../store/themeStore';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
   const cartItems = useCartStore((state) => state.items);
+  const { theme, toggleTheme } = useThemeStore();
 
   const handleLogout = () => {
     logout();
@@ -18,12 +20,13 @@ export default function Navbar() {
       top: 0, 
       zIndex: 50, 
       marginBottom: 20,
-      background: 'rgba(10, 14, 23, 0.7)', // Полупрозрачный фон
+      background: 'var(--bg-surface)',
       backdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255,255,255,0.1)'
+      borderBottom: '1px solid var(--glass-border)',
+      transition: 'background 0.3s'
     }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '70px' }}>
-        <Link to="/" className="text-gradient" style={{ textDecoration: 'none', fontSize: 24, fontWeight: 800, fontFamily: 'Montserrat' }}>
+        <Link to="/" className="text-gradient" style={{ textDecoration: 'none', fontSize: 24, fontWeight: 800 }}>
           TECH.SHOP
         </Link>
         
@@ -35,7 +38,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               {user?.role === 'admin' && (
-                <Link to="/admin" className="nav-link" style={{ color: '#ec4899' }}>Admin</Link>
+                <Link to="/admin" className="nav-link" style={{ color: 'var(--accent)' }}>Admin</Link>
               )}
               <Link to="/cart" className="nav-link" style={{ position: 'relative' }}>
                 Корзина
@@ -67,6 +70,16 @@ export default function Navbar() {
               </button>
             </Link>
           )}
+          
+          {/* Кнопка переключения темы */}
+          <button 
+            onClick={toggleTheme} 
+            className="btn btn-outline" 
+            style={{ padding: '6px 12px', fontSize: 16, minWidth: 40 }}
+            title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
         </div>
       </div>
     </nav>

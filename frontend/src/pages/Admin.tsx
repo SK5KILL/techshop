@@ -82,7 +82,7 @@ export default function Admin() {
     if (!confirm('Удалить товар?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:3001/api/products/${id}`, {
+      await fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -102,7 +102,7 @@ export default function Admin() {
     if (!editingProduct) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3001/api/products/${editingProduct.id}`, {
+      const res = await fetch(`https://techshop-backend-dkgb.onrender.com/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -117,7 +117,7 @@ export default function Admin() {
         setMessage('✅ Товар обновлён!');
         setIsEditing(false);
         setEditingProduct(null);
-        fetch('http://localhost:3001/api/products').then(r => r.json()).then(setProducts);
+        fetch('https://techshop-backend-dkgb.onrender.com/api/products').then(r => r.json()).then(setProducts);
       }
     } catch { setMessage('❌ Ошибка соединения'); }
   };

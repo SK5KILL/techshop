@@ -400,4 +400,4 @@ app.post('/api/orders/checkout', isAuthenticated, async (req: any, res) => {
   }
 });
 
-app.listen(3001, () => console.log('✅ Backend: http://localhost:3001'));
+app.listen(3001, () => console.log('✅ Backend: https://techshop-backend-dkgb.onrender.com/api/products'));

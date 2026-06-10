@@ -1,28 +1,73 @@
+/* ============================================
+   FONT IMPORTS
+   ============================================ */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;500;700&display=swap');
 
-:root {
-  /* Палитра Cyberpunk/Tech */
-  --bg-deep: #0a0e17;       /* Почти черный */
-  --bg-surface: #111827;    /* Темно-серый */
+/* ============================================
+   THEME VARIABLES - DARK (DEFAULT)
+   ============================================ */
+[data-theme="dark"] {
+  --bg-deep: #0a0e17;
+  --bg-surface: #111827;
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   
-  --primary: #6366f1;       /* Indigo */
-  --accent: #ec4899;        /* Pink Neon */
-  --success: #10b981;       /* Green */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --accent: #ec4899;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
   
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.3);
+  
   --radius-lg: 16px;
   --radius-md: 8px;
+  --radius-sm: 4px;
 }
 
+/* ============================================
+   THEME VARIABLES - LIGHT
+   ============================================ */
+[data-theme="light"] {
+  --bg-deep: #f8fafc;
+  --bg-surface: #ffffff;
+  --glass-bg: #ffffff;
+  --glass-border: #e2e8f0;
+  
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --accent: #db2777;
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+  
+  --text-main: #1e1b4b;
+  --text-muted: #64748b;
+  
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.2);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
+  --radius-lg: 16px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -30,44 +75,98 @@ body {
   color: var(--text-main);
   font-family: 'Inter', sans-serif;
   line-height: 1.5;
-  /* Красивый фоновый градиент для глубины */
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
-  min-height: 100vh;
 }
 
-h1, h2, h3, h4 {
+[data-theme="light"] body {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(219, 39, 119, 0.05) 0%, transparent 40%);
+}
+
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   letter-spacing: -0.02em;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-/* --- GLASSMORPHISM CARDS --- */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ============================================
+   LAYOUT UTILITIES
+   ============================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-muted { color: var(--text-muted); }
+
+/* ============================================
+   GLASSMORPHISM CARDS
+   ============================================ */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-card);
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--primary);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-glow), var(--shadow-card);
 }
 
-/* --- BUTTONS --- */
+/* ============================================
+   BUTTONS
+   ============================================ */
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 10px 20px;
   border-radius: var(--radius-md);
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   border: none;
-  transition: all 0.2s;
-  font-size: 14px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-primary {
@@ -76,9 +175,10 @@ h1, h2, h3, h4 {
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   filter: brightness(1.1);
   transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
 }
 
 .btn-accent {
@@ -86,10 +186,20 @@ h1, h2, h3, h4 {
   color: white;
 }
 
+.btn-accent:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
 .btn-danger {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: white;
 }
 
 .btn-outline {
@@ -98,68 +208,155 @@ h1, h2, h3, h4 {
   color: var(--text-muted);
 }
 
-.btn-outline:hover {
-  border-color: var(--text-main);
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--primary);
   color: var(--text-main);
-  background: rgba(255,255,255,0.05);
+  background: var(--glass-bg);
 }
 
-/* --- INPUTS --- */
+.btn-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: var(--success);
+  color: white;
+}
+
+/* ============================================
+   FORMS & INPUTS
+   ============================================ */
 input, textarea, select {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   color: var(--text-main);
   font-size: 14px;
+  font-family: inherit;
   outline: none;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
-input:focus, textarea:focus {
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+input:focus, textarea:focus, select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.05);
 }
 
-/* --- LAYOUT UTILS --- */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+input[type="radio"], input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--primary);
+  cursor: pointer;
 }
 
-.text-gradient {
-  background: linear-gradient(to right, #818cf8, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+/* ============================================
+   NAVIGATION
+   ============================================ */
 .nav-link {
   color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
   font-size: 14px;
+  padding: 8px 4px;
+  transition: color 0.2s ease;
+  position: relative;
 }
-.nav-link:hover {
-  color: white;
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: all 0.2s ease;
+  transform: translateX(-50%);
 }
-/* Анимация появления */
-.fade-in-up {
-  animation: fadeInUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  opacity: 0;
+
+.nav-link:hover, .nav-link.active {
+  color: var(--text-main);
 }
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Улучшенный ховер для карточек преимуществ */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 50px rgba(99, 102, 241, 0.7); }
+}
+
+@keyframes rotateGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+/* ============================================
+   HOME PAGE STYLES
+   ============================================ */
 .feature-card {
   position: relative;
   overflow: hidden;
 }
+
 .feature-card::before {
   content: '';
   position: absolute;
@@ -169,30 +366,387 @@ input:focus, textarea:focus {
   transition: opacity 0.3s;
   pointer-events: none;
 }
+
 .feature-card:hover::before {
   opacity: 1;
 }
+
 .feature-card:hover {
   transform: translateY(-6px) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), var(--shadow-glow) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), var(--shadow-glow) !important;
 }
 
-/* Кнопка с пульсацией */
-.btn-primary:hover {
-  animation: pulse-glow 1.5s infinite;
+/* ============================================
+   CATALOG PAGE STYLES
+   ============================================ */
+.catalog-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: slideDown 0.6s ease-out;
 }
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); }
-  50% { box-shadow: 0 0 50px rgba(99, 102, 241, 0.7); }
+
+.catalog-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 24px;
+  animation: slideDown 0.6s ease-out 0.1s both;
 }
-.product-hero {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 40px;
-  padding: 40px;
+
+.category-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  animation: slideDown 0.6s ease-out 0.2s both;
+}
+
+.filter-btn {
+  padding: 10px 22px;
+  border-radius: 50px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.filter-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.filter-btn:hover::before {
+  left: 100%;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 25px rgba(99, 102, 241, 0.5), 0 0 40px rgba(99, 102, 241, 0.2);
+  transform: translateY(-2px);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.product-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.5), rgba(236,72,153,0.3), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 0 40px rgba(99,102,241,0.15);
+}
+
+.product-card:hover::before,
+.product-card:hover::after {
+  opacity: 1;
+}
+
+.product-image-wrapper {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(240,240,250,0.5) 0%, rgba(230,230,245,0.8) 100%);
+}
+
+[data-theme="dark"] .product-image-wrapper {
+  background: linear-gradient(180deg, rgba(30,30,50,0.5) 0%, rgba(20,20,35,0.8) 100%);
+}
+
+.product-image-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, var(--bg-deep));
+  pointer-events: none;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  transition: color 0.3s;
+}
+
+.product-card:hover .product-name {
+  color: var(--primary);
+}
+
+.product-price {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--success);
+  margin: 12px 0 4px 0;
+}
+
+.stock-status {
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--success);
+}
+
+.stock-status.in-stock { color: var(--success); }
+.stock-status.out-of-stock { color: var(--danger); }
+
+.stock-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.stock-status.in-stock::before {
+  background: var(--success);
+  box-shadow: 0 0 10px var(--success);
+  animation: pulse-dot 2s infinite;
+}
+
+.stock-status.out-of-stock::before {
+  background: var(--danger);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.add-to-cart-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+}
+
+.add-to-cart-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #8b5cf6, var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 30px rgba(99,102,241,0.6), 0 0 40px rgba(139,92,246,0.3);
+}
+
+.add-to-cart-btn:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.add-to-cart-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.add-to-cart-btn.disabled {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.product-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 20px;
+  margin-top: auto;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  color: var(--text-muted);
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+.auth-warning {
+  background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05));
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideDown 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  color: var(--text-main);
+}
+
+.auth-warning a {
+  color: var(--warning);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.auth-warning a:hover {
+  color: #f59e0b;
+  text-decoration: underline;
+}
+
+/* Staggered animation for product cards */
+.product-card {
+  animation: cardAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(4) { animation-delay: 0.2s; }
+.product-card:nth-child(5) { animation-delay: 0.25s; }
+.product-card:nth-child(6) { animation-delay: 0.3s; }
+.product-card:nth-child(7) { animation-delay: 0.35s; }
+.product-card:nth-child(8) { animation-delay: 0.4s; }
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   PRODUCT DETAIL PAGE STYLES
+   ============================================ */
+.product-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+  min-height: 700px;
+  transition: none; /* Убираем анимацию для всей карточки */
+}
+
+.product-hero:hover {
+  transform: none !important; /* Отменяем движение всей карточки */
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
 .product-hero::before {
@@ -205,29 +759,44 @@ input:focus, textarea:focus {
   animation: rotateGlow 12s linear infinite;
 }
 
-@keyframes rotateGlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .product-image-wrapper {
   position: relative;
-  aspect-ratio: 1;
-  border-radius: 20px;
-  background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.1);
+  min-height: 600px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(240,240,250,0.5), rgba(230,230,245,0.8));
+  border: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 40px;
+  transition: all 0.4s ease; /* Плавный переход */
+  cursor: zoom-in; /* Показываем, что можно увеличить */
+}
+
+[data-theme="dark"] .product-image-wrapper {
+  background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+}
+
+product-image-wrapper:hover {
+  transform: scale(1.02); /* Лёгкое увеличение контейнера */
+  border-color: var(--primary);
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
 }
 
 .product-image {
-  max-width: 85%;
-  max-height: 85%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
+}
+
+.product-image-wrapper:hover .product-image {
+  transform: scale(1.1) rotate(-2deg); /* Увеличение и лёгкий поворот изображения */
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
 }
 
 .product-image-wrapper:hover .product-image {
@@ -239,14 +808,13 @@ input:focus, textarea:focus {
   font-weight: 800;
   margin: 0 0 12px 0;
   line-height: 1.2;
+  color: var(--text-main);
 }
 
 .product-price {
   font-size: 2.8rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #10b981, #34d399);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--success);
   margin: 16px 0;
 }
 
@@ -263,13 +831,13 @@ input:focus, textarea:focus {
 
 .stock-badge.in {
   background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  color: var(--success);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .stock-badge.out {
   background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
@@ -284,20 +852,20 @@ input:focus, textarea:focus {
   display: flex;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(255,255,255,0.03);
+  background: var(--glass-bg);
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
   transition: 0.3s;
 }
 
 .spec-item:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.05);
+  border-color: var(--primary);
   transform: translateX(4px);
 }
 
 .spec-label { color: var(--text-muted); font-weight: 500; }
-.spec-value { color: white; font-weight: 600; }
+.spec-value { color: var(--text-main); font-weight: 600; }
 
 .reviews-section {
   margin-top: 40px;
@@ -310,8 +878,8 @@ input:focus, textarea:focus {
 }
 
 .review-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 12px;
@@ -331,7 +899,7 @@ input:focus, textarea:focus {
 }
 
 .review-card:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(99,102,241,0.05);
   transform: translateX(6px);
 }
 
@@ -346,7 +914,7 @@ input:focus, textarea:focus {
 
 .review-author {
   font-weight: 600;
-  color: #a5b4fc;
+  color: var(--primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -361,7 +929,7 @@ input:focus, textarea:focus {
 }
 
 .review-date { font-size: 12px; color: var(--text-muted); }
-.review-text { color: var(--text-main); line-height: 1.6; margin: 0; }
+.review-text { color: var(--text-main); line-height: 1.6; margin: 0; white-space: pre-wrap; }
 
 .empty-reviews {
   text-align: center;
@@ -369,10 +937,10 @@ input:focus, textarea:focus {
   color: var(--text-muted);
   font-style: italic;
 }
-/* ============================================
-   ЛИЧНЫЙ КАБИНЕТ - DASHBOARD STYLE
-   ============================================ */
 
+/* ============================================
+   PROFILE / DASHBOARD STYLES
+   ============================================ */
 .profile-header {
   display: flex;
   align-items: center;
@@ -401,10 +969,10 @@ input:focus, textarea:focus {
 }
 
 .stat-item {
-  background: rgba(255,255,255,0.03);
+  background: var(--glass-bg);
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
 }
 
 .stat-label {
@@ -418,7 +986,7 @@ input:focus, textarea:focus {
 .stat-value {
   font-size: 18px;
   font-weight: 600;
-  color: white;
+  color: var(--text-main);
 }
 
 .role-badge {
@@ -431,14 +999,14 @@ input:focus, textarea:focus {
 
 .role-admin {
   background: rgba(236, 72, 153, 0.15);
-  color: #ec4899;
+  color: var(--accent);
   border: 1px solid rgba(236, 72, 153, 0.4);
   box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);
 }
 
 .role-user {
   background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  color: var(--primary);
   border: 1px solid rgba(99, 102, 241, 0.4);
 }
 
@@ -455,19 +1023,22 @@ input:focus, textarea:focus {
   padding: 20px 25px;
   transition: all 0.3s ease;
   border-left: 3px solid transparent;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
 }
 
 .order-card:hover {
   transform: translateX(5px);
-  background: rgba(255,255,255,0.06);
+  border-color: var(--primary);
 }
 
-.order-card.new { border-left-color: #f59e0b; } /* Желтый для новых */
-.order-card.completed { border-left-color: #10b981; } /* Зеленый для завершенных */
+.order-card.new { border-left-color: var(--warning); }
+.order-card.completed { border-left-color: var(--success); }
 
 .order-info h4 {
   margin: 0 0 5px 0;
-  color: white;
+  color: var(--text-main);
   font-size: 16px;
 }
 
@@ -479,7 +1050,7 @@ input:focus, textarea:focus {
 .order-total {
   font-size: 20px;
   font-weight: 700;
-  color: #10b981; /* Зеленая цена */
+  color: var(--success);
 }
 
 .status-pill {
@@ -488,20 +1059,17 @@ input:focus, textarea:focus {
   font-size: 12px;
   font-weight: 600;
   background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
+  color: var(--warning);
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px;
-  color: var(--text-muted);
-}
-
+/* ============================================
+   ADMIN PANEL STYLES
+   ============================================ */
 .admin-title {
   font-size: 2rem;
   font-weight: 800;
   margin-bottom: 25px;
-  background: linear-gradient(to right, #fff, #a5b4fc);
+  background: linear-gradient(to right, var(--primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: flex;
@@ -513,7 +1081,6 @@ input:focus, textarea:focus {
   margin-bottom: 40px;
 }
 
-/* Сетка для формы добавления */
 .add-product-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -525,18 +1092,8 @@ input:focus, textarea:focus {
   grid-column: 1 / -1;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Стилизация инпута загрузки файла */
 .file-input-wrapper {
-  border: 2px dashed rgba(255,255,255,0.1);
+  border: 2px dashed var(--glass-border);
   padding: 20px;
   border-radius: 12px;
   text-align: center;
@@ -564,10 +1121,9 @@ input:focus, textarea:focus {
   object-fit: cover;
   border-radius: 8px;
   margin-top: 15px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid var(--glass-border);
 }
 
-/* Таблица товаров */
 .product-list {
   display: flex;
   flex-direction: column;
@@ -579,15 +1135,15 @@ input:focus, textarea:focus {
   align-items: center;
   gap: 20px;
   padding: 15px 20px;
-  border: 1px solid rgba(255,255,255,0.05);
-  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   border-radius: 12px;
   transition: all 0.3s ease;
 }
 
 .product-row:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99,102,241,0.05);
+  border-color: var(--primary);
   transform: translateX(5px);
 }
 
@@ -596,7 +1152,7 @@ input:focus, textarea:focus {
   height: 60px;
   border-radius: 8px;
   object-fit: cover;
-  background: #000;
+  background: var(--bg-surface);
 }
 
 .product-info-row {
@@ -604,7 +1160,7 @@ input:focus, textarea:focus {
 }
 
 .product-name-row {
-  color: white;
+  color: var(--text-main);
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 4px;
@@ -615,7 +1171,6 @@ input:focus, textarea:focus {
   font-size: 13px;
 }
 
-/* Кнопки действий */
 .action-btn {
   padding: 8px 16px;
   border-radius: 8px;
@@ -631,23 +1186,19 @@ input:focus, textarea:focus {
 
 .btn-edit {
   background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  color: var(--primary);
 }
-.btn-edit:hover { background: #818cf8; color: white; }
+.btn-edit:hover { background: var(--primary); color: white; }
 
 .btn-delete {
   background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  color: var(--danger);
 }
-.btn-delete:hover { background: #ef4444; color: white; }
+.btn-delete:hover { background: var(--danger); color: white; }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .add-product-form { grid-template-columns: 1fr; }
-  .product-row { flex-direction: column; text-align: center; }
-}
-
-
+/* ============================================
+   CART PAGE STYLES
+   ============================================ */
 .cart-wrapper {
   padding: 20px 0 60px 0;
 }
@@ -656,7 +1207,7 @@ input:focus, textarea:focus {
   font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 30px;
-  background: linear-gradient(135deg, #fff, #a5b4fc);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: flex;
@@ -671,57 +1222,56 @@ input:focus, textarea:focus {
   margin-bottom: 30px;
 }
 
-/* Карточка товара в корзине */
 .cart-item {
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 20px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
-  background: rgba(255,255,255,0.03);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
 
 .cart-item:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99,102,241,0.05);
+  border-color: var(--primary);
   transform: translateX(4px);
 }
 
-/* Изображение */
 .cart-item-img {
   width: 80px;
   height: 80px;
   border-radius: 10px;
   object-fit: cover;
-  background: #000;
+  background: var(--bg-surface);
 }
 
-/* Инфо о товаре */
 .cart-item-info {
   flex: 1;
 }
+
 .cart-item-name {
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--text-main);
   margin-bottom: 4px;
 }
+
 .cart-item-category {
   font-size: 13px;
   color: var(--text-muted);
 }
 
-/* Контролы количества */
 .qty-control {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0,0,0,0.3);
+  background: var(--glass-bg);
   padding: 4px;
   border-radius: 12px;
+  border: 1px solid var(--glass-border);
 }
 
 .qty-btn {
@@ -729,8 +1279,8 @@ input:focus, textarea:focus {
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
+  background: var(--glass-bg);
+  color: var(--text-main);
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -741,6 +1291,7 @@ input:focus, textarea:focus {
 
 .qty-btn:hover:not(:disabled) {
   background: var(--primary);
+  color: white;
 }
 
 .qty-btn:disabled {
@@ -752,43 +1303,23 @@ input:focus, textarea:focus {
   font-weight: 600;
   min-width: 20px;
   text-align: center;
+  color: var(--text-main);
 }
 
-/* Цена и удаление */
 .cart-item-total {
   font-size: 18px;
   font-weight: 700;
-  color: #10b981; /* Зеленый для денег */
+  color: var(--success);
   min-width: 100px;
   text-align: right;
 }
 
-.btn-delete {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  cursor: pointer;
-  transition: 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-delete:hover {
-  background: #ef4444;
-  color: white;
-}
-
-/* Итоговая панель */
 .cart-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 30px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   background: linear-gradient(145deg, rgba(99, 102, 241, 0.05), rgba(236, 72, 153, 0.05));
   backdrop-filter: blur(20px);
@@ -802,9 +1333,7 @@ input:focus, textarea:focus {
 .total-value {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(to right, #10b981, #34d399);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--success);
 }
 
 .btn-checkout {
@@ -825,35 +1354,171 @@ input:focus, textarea:focus {
   box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
 }
 
-/* Пустая корзина */
 .empty-cart {
   text-align: center;
   padding: 80px 20px;
   color: var(--text-muted);
 }
-.empty-cart-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
+
+.empty-cart-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+/* ============================================
+   MODAL STYLES
+   ============================================ */
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card), 0 0 40px rgba(99, 102, 241, 0.2);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--primary), #8b5cf6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(#8b5cf6, var(--accent));
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 1024px) {
+  .product-hero {
+    grid-template-columns: 1fr;
+    padding: 25px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+@media (max-width: 768px) {
+  .add-product-form {
+    grid-template-columns: 1fr;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .product-row {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .cart-footer {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .review-form {
+    flex-direction: column;
+  }
+  
+  .category-filters {
+    justify-content: center;
+  }
+  
+  .filter-btn {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-image-wrapper {
+    height: 200px;
+  }
+  
+  .product-price {
+    font-size: 22px;
+  }
+  
+  .cart-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .cart-item-total {
+    text-align: center;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .glass-card, .btn, .nav-link {
+    border: 1px solid #000;
+    background: white;
+    box-shadow: none;
+  }
+}
+/* ============================================
+   LIGHT THEME - FIX PRICES VISIBILITY
+   ============================================ */
+
+/* Делаем ВСЕ цены ярко-зелёными в светлой теме */
+[data-theme="light"] .product-price,
+[data-theme="light"] p[style*="font-weight: 700"],
+[data-theme="light"] div p:nth-last-child(2) {
+  color: #059669 !important;
+  background: none !important;
+  -webkit-text-fill-color: #059669 !important;
+}
+
+/* Названия товаров - тёмно-синие */
+[data-theme="light"] .product-name,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4 {
+  color: #1e1b4b !important;
+  -webkit-text-fill-color: #1e1b4b !important;
+}
+
+/* Категории - фиолетовые */
+[data-theme="light"] .category-badge,
+[data-theme="light"] span[style*="text-transform: uppercase"] {
+  color: #4f46e5 !important;
+  background: rgba(79, 70, 229, 0.15) !important;
+}
+
+/* Статус "В наличии" - зелёный */
+[data-theme="light"] p[style*="--success"],
+[data-theme="light"] .stock-status {
+  color: #059669 !important;
 }

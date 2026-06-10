@@ -8,7 +8,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (user) {
-      fetch(`https://techshop-backend-dkgb.onrender.com/api/users/${user.id}/orders`)
+      fetch(`http://localhost:3000/api/users/${user.id}/orders`)
         .then(r => r.json())
         .then(data => {
             setOrders(data);
